@@ -14,7 +14,7 @@ void setup()
 { 
    for(int i = 0; i < calibrationTime; i++){
     Serial.print(".");
-    delay(500);
+    delay(400);
   }
   Serial.println();
   Serial.println("Capteur Calibre");
