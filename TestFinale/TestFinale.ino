@@ -5,10 +5,10 @@
 int etat = 0;
 int calibrationTime = 10;
  
-Servo myservo;  // create servo object to control a servo 
-                // a maximum of eight servo objects can be created 
+Servo myservo;  // Créer un objet servo pour contrôler 
+                
  
-int pos = 0;    // variable to store the servo position 
+int pos = 0;    // Variable pour stocker la position du servo
  
 void setup() 
 { 
@@ -33,17 +33,17 @@ void loop()
   delay(1500); // Délai pour ne pas écrire trop vite dans le moniteur
 
   if (etat == 1) {
-  for(pos = 0; pos < 180; pos += 1)  // goes from 0 degrees to 180 degrees 
-  {                                  // in steps of 1 degree 
-    myservo.write(pos);              // tell servo to go to position in variable 'pos' 
+  for(pos = 0; pos < 180; pos += 1)  // Servomoteur de 0 à 180 degrés 
+  {                                  // 
+    myservo.write(pos);              //  
                              
   } 
     
   }
   if (etat == 0) {
-    for(pos = 180; pos>=1; pos-=1)     // goes from 180 degrees to 0 degrees 
+    for(pos = 180; pos>=1; pos-=1)     // Servomoteur de 180 à 0 degrés
   {                                
-          myservo.write(pos);   // tell servo to go to position in variable 'pos' 
+          myservo.write(pos);   // Dit au servo d'aller à la position "pos" 
                            
   }
      
