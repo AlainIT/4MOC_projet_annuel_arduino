@@ -1,5 +1,6 @@
 
 #include <Servo.h> 
+#include <Ethernet.h>
 #define PIR 12
 
 int etat = 0;
@@ -20,6 +21,25 @@ const float SOUND_SPEED = 340.0 / 1000; // Vitesse du son dans l'air en mm/us
  
 Servo myservo;  // Créer un objet servo pour contrôler               
 int pos = 0;    // Variable pour stocker la position du servo
+
+
+  //Ethernet
+  //**************
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+//IPAddress server(192,168,1,16);  // numeric IP for Google (no DNS)
+char server[] = "http://poubelle-connecte.pe.hu/PoubelleAPI/API/v1/poubelles";    // nom adresse api
+
+// Set the static IP address to use if the DHCP fails to assign
+IPAddress ip(192, 168, 0, 177);
+
+String data = "{\"sujet\":\"TEST\"}";
+
+// Initialize the Ethernet client library
+// with the IP address and port of the server
+// that you want to connect to (port 80 is default for HTTP):
+EthernetClient client;
+//End Ethernet
+//**************
  
 void setup() 
 { 
@@ -44,6 +64,41 @@ void setup()
   Serial.begin(9600); //Moniteur série
   pinMode(PIR, INPUT); // Broche 12 configurée en entrée
   myservo.attach(9);  
+
+
+  //Ethernet
+  //**************
+  // start the Ethernet connection:
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Failed to configure Ethernet using DHCP");
+    // try to congifure using IP address instead of DHCP:
+    Ethernet.begin(mac, ip);
+  }
+  // give the Ethernet shield a second to initialize:
+  delay(1000);
+  Serial.println("connecting...");
+
+  // if you get a connection, report back via serial:
+  if (client.connect(server, 8000)) {
+    Serial.println("connected");
+    // Make a HTTP request:
+    client.println("POST /api/addsensor HTTP/1.1");                    
+    //client.println("Host: 192.168.1.16");
+    client.println("Content-Type: application/x-www-form-urlencoded");
+    client.println("Connection: close");
+    client.println("User-Agent: Arduino/1.0");
+    client.print("Content-Length: ");
+    client.println("Authorization: 226f791098549052f704eb37b2ae7999");
+    client.println(data.length());
+    client.println();
+    client.print(data);
+    client.println(); 
+  } else {
+    // if you didn't get a connection to the server:
+    Serial.println("connection failed");
+  }
+    //End Ethernet
+  //**************
 } 
  
  
@@ -112,7 +167,29 @@ void loop()
                            
   } 
   }
-   
+
+/********
+ * Ethernet
+ */
+    // if there are incoming bytes available
+  // from the server, read them and print them:
+  if (client.available()) {
+    char c = client.read();
+    Serial.print(c);
+  }
+
+  // if the server's disconnected, stop the client:
+  if (!client.connected()) {
+    Serial.println();
+    Serial.println("disconnecting.");
+    client.stop();
+
+    // do nothing forevermore:
+    while (true);
+  }
+   /********
+ * End Ethernet
+ */
 } 
 
 /* Initialisation de la LED */
